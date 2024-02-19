@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 
 
-data = pd.read_csv('D:/Files/IMT-Mines-Ales/S8/Introduction a Apprentissage Auto/Project/malicious_phish/malicious_phish.csv')
+data = pd.read_csv('../Dataset/malicious_phish.csv')
 
 # data = pd.read_csv('malicious_phish.csv')
 data.head(20)
