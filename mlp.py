@@ -5,6 +5,8 @@ from tld import get_tld, is_tld
 from urllib.parse import urlparse
 import re
 from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 
 
 
@@ -112,21 +114,7 @@ def Shortining_Service(url):
         return 0
     
 data['Shortining_Service'] = data['url'].apply(lambda x: Shortining_Service(x))
-#check if the given url has ip address or not
-def having_ip_address(url):
-    match = re.search(
-        '(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.'
-        '([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\/)|'  # IPv4
-        '(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.'
-        '([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\/)|'  # IPv4 with port
-        '((0x[0-9a-fA-F]{1,2})\\.(0x[0-9a-fA-F]{1,2})\\.(0x[0-9a-fA-F]{1,2})\\.(0x[0-9a-fA-F]{1,2})\\/)' # IPv4 in hexadecimal
-        '(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}|'
-        '([0-9]+(?:\.[0-9]+){3}:[0-9]+)|'
-        '((?:(?:\d|[01]?\d\d|2[0-4]\d|25[0-5])\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d|\d)(?:\/\d{1,2})?)', url)  # Ipv6
-    if match:
-        return 1
-    else:
-        return 0
+
 #check whether the url contains domain name or ip directly 
 def having_ip_address(url):
     match = re.search(
@@ -147,3 +135,25 @@ data['having_ip_address'] = data['url'].apply(lambda i: having_ip_address(i))
 #
 X = data.drop(['url','type','Category','domain'],axis=1)
 y = data['Category']
+
+#implementing logistic regression
+
+#split dataset
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+classifier = LogisticRegression()
+
+classifier.fit(X_train, y_train)
+
+y_pred = classifier.predict(X_test)
+
+#test
+# if y_pred == 1:
+#     print("The URL is predicted to be spam.")
+# else:
+#     print("The URL is predicted to be not spam.")
+
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
+
+
