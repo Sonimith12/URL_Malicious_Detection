@@ -6,19 +6,19 @@ from urllib.parse import urlparse
 import re
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
 
 
-data = pd.read_csv('../Dataset/malicious_phish.csv')
+data = pd.read_csv('malicious_phish/malicious_phish.csv')
 
 # data = pd.read_csv('malicious_phish.csv')
 data.head(20)
-# 
+# list info
 data.info()
-# 
+# count the null value of each column
 data.isnull().sum()
-# 
+# count the type of column type
 count = data.type.value_counts()
 count
 # 
@@ -32,7 +32,7 @@ plt.ylabel('Count')
 data['url'] = data['url'].replace('www.', '', regex=True)
 data
 # using ditionary in python to assign each key to the following value
-rem = {"Category": {"benign": 0, "defacement": 1, "phishing":1, "malware":1}}
+rem = {"Category": {"benign": 0, "defacement": 1, "phishing": 1, "malware": 1}}
 data['Category'] = data['type']
 data = data.replace(rem)
 data.head(20)
@@ -54,7 +54,7 @@ data['domain'] = data['url'].apply(lambda i: process_tld(i))
 feature = ['@','?','-','=','.','#','%','+','$','!','*',',','//']
 for a in feature:
      data[a] = data['url'].apply(lambda i: i.count(a))
-#
+#For example, in the URL https://www.example.com/page.html, the hostname is www.example.com.
 def abnormal_url(url):
     hostname = urlparse(url).hostname
     hostname = str(hostname)
@@ -147,13 +147,24 @@ classifier.fit(X_train, y_train)
 
 y_pred = classifier.predict(X_test)
 
-#test
-# if y_pred == 1:
-#     print("The URL is predicted to be spam.")
-# else:
-#     print("The URL is predicted to be not spam.")
-
 accuracy = accuracy_score(y_test, y_pred)
 print("Accuracy:", accuracy)
+
+# Calculate precision
+precision = precision_score(y_test, y_pred)
+print("Precision:", precision)
+
+# Calculate recall
+recall = recall_score(y_test, y_pred)
+print("Recall:", recall)
+
+# Calculate F1-score
+f1 = f1_score(y_test, y_pred)
+print("F1-score:", f1)
+
+# Calculate confusion matrix
+conf_matrix = confusion_matrix(y_test, y_pred)
+print("Confusion Matrix:")
+print(conf_matrix)
 
 
